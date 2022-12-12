@@ -33,6 +33,7 @@ description for details.
 
 Good luck and happy searching!
 """
+import sys
 
 from game import Directions
 from game import Agent
@@ -375,27 +376,46 @@ def cornersHeuristic(state, problem):
     shortest path from the state to a goal of the problem; i.e.  it should be
     admissible (as well as consistent).
     """
-    corners = problem.corners # These are the corner coordinates
-    walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
+    corners = problem.corners  # These are the corner coordinates
+    unvisited_corners = []
+    state_coordinates, visited_corners = state
+    result = 0
 
-    node = state[0]
-    visitedCorners = state[1]
-
-    unvisited = []
-
+    # first we make a list of unvisited_corners
+    closest_corner = None
     for corner in corners:
-        if corner not in visitedCorners:
-            unvisited.append(corner)
+        if corner not in visited_corners:
+            unvisited_corners.append(corner)
 
-    totalDistance = 0
+    # if we are in the goal state, then the heuristic returns 0
+    if problem.isGoalState(state):
+        return 0
 
-    while unvisited != []:
-        distance, corner = min([(mazeDistance(node, corner, problem.sS), corner) for corner in unvisited])
-        totalDistance += distance
-        node = corner
-        unvisited.remove(corner)
+    # we find the closest corner and the distance of our current state from it
+    closest_distance = sys.maxsize
 
-    return totalDistance
+    for corner in unvisited_corners:
+        current_distance = util.manhattanDistance(state_coordinates, corner)
+        if current_distance < closest_distance:
+            closest_distance = current_distance
+            closest_corner = corner
+
+    unvisited_corners.remove(closest_corner)
+
+    while unvisited_corners:
+        next_closest_corner = unvisited_corners[0]
+        next_min_distance = sys.maxsize
+
+        for unvisited_corner in unvisited_corners:
+            current_distance = util.manhattanDistance(closest_corner, unvisited_corner)
+            if current_distance < next_min_distance:
+                next_min_distance = current_distance
+                next_closest_corner = unvisited_corner
+
+        closest_corner = next_closest_corner
+        result += next_min_distance
+        unvisited_corners.remove(next_closest_corner)
+    return closest_distance + result
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
@@ -525,7 +545,7 @@ class ClosestDotSearchAgent(SearchAgent):
         problem = AnyFoodSearchProblem(gameState)
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return search.iterative_deepening_search(problem)
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
@@ -560,8 +580,9 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         """
         x,y = state
 
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        if state in self.food.asList():
+            return True
+        return False
 
 def mazeDistance(point1, point2, gameState):
     """

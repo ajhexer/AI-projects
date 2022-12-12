@@ -157,7 +157,35 @@ def aStarSearch(problem, heuristic=nullHeuristic):
                 counts[str(successor)] = problem.getCostOfActions(new_path) + heuristic(successor, problem)
                 fringe.push((successor, new_path), counts[str(successor)])
 
-# Abbreviations
+def iterative_deepening_search(problem):
+    def ids_util(problem, limit=1000):
+        fringe = util.Stack()
+        fringe.push((problem.getStartState(), [], []))
+        counts = util.Counter()
+        counts[problem.getStartState] = 0
+        visited = []
+        while not fringe.isEmpty():
+            node, path, total = fringe.pop()
+            if problem.isGoalState(node):
+                return path
+            if counts[node] == limit:
+                continue
+            if node not in visited:
+                visited.append(node)
+                for successor, action, cost in problem.getSuccessors(node):
+                    fringe.push((successor, path + [action], total + [cost]))
+                    counts[successor] = counts[node] + 1
+        return "cut"
+
+    iteration = 0
+
+    while (True):
+        result = ids_util(problem, iteration)
+        if result != "cut":
+            return result
+        iteration += 1
+
+                    # Abbreviations
 bfs = breadthFirstSearch
 dfs = depthFirstSearch
 astar = aStarSearch
