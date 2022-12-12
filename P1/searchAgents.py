@@ -287,7 +287,7 @@ class CornersProblem(search.SearchProblem):
         self._expanded = 0 # DO NOT CHANGE; Number of search nodes expanded
         # Please add any code here which you would like to use
         # in initializing the problem
-        "*** YOUR CODE HERE ***"
+        self.sS = startingGameState
 
     def getStartState(self):
         """
@@ -390,7 +390,7 @@ def cornersHeuristic(state, problem):
     totalDistance = 0
 
     while unvisited != []:
-        distance, corner = min([(mazeDistance(node, corner, problem.getStartState()), corner) for corner in unvisited])
+        distance, corner = min([(mazeDistance(node, corner, problem.sS), corner) for corner in unvisited])
         totalDistance += distance
         node = corner
         unvisited.remove(corner)
