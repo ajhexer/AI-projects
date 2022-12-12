@@ -158,7 +158,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
                 fringe.push((successor, new_path), counts[str(successor)])
 
 def iterative_deepening_search(problem):
-    def ids_util(problem, limit=1000):
+    def ids_util(problem, limit=100):
         fringe = util.Stack()
         fringe.push((problem.getStartState(), [], []))
         counts = util.Counter()
@@ -177,13 +177,12 @@ def iterative_deepening_search(problem):
                     counts[successor] = counts[node] + 1
         return "cut"
 
-    iteration = 0
-
-    while (True):
+    for iteration in range(100):
         result = ids_util(problem, iteration)
         if result != "cut":
             return result
-        iteration += 1
+
+
 
                     # Abbreviations
 bfs = breadthFirstSearch
