@@ -390,7 +390,7 @@ def cornersHeuristic(state, problem):
     totalDistance = 0
 
     while unvisited != []:
-        distance, corner = min([(mazeDistance(node, corner, problem.getStartState), corner) for corner in unvisited])
+        distance, corner = min([(mazeDistance(node, corner, problem.getStartState()), corner) for corner in unvisited])
         totalDistance += distance
         node = corner
         unvisited.remove(corner)
