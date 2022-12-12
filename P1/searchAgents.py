@@ -488,14 +488,11 @@ def foodHeuristic(state, problem):
     problem.heuristicInfo['wallCount']
     """
     position, foodGrid = state
-    currentX, currentY = position
     foods = []
-    for x, y in foodGrid.asList():
-        heuristic = ((x - currentX)**2 + (y - currentY)**2)**0.5
-        foods.append(heuristic)
-
+    for food in foodGrid.asList():
+        foods.append(mazeDistance(position, food, problem.startingGameState))
     if foods:
-        return min(foods)
+        return max(foods)
     else:
         return 0
 
