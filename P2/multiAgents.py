@@ -288,8 +288,59 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         All ghosts should be modeled as choosing uniformly at random from their
         legal moves.
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        def max_f(gameState, depth):
+            currentDepth = depth + 1
+
+            if gameState.isWin() or gameState.isLose() or currentDepth == self.depth:
+                return self.evaluationFunction(gameState)
+
+            value = -999
+            actions = gameState.getLegalActions(0)
+
+            for action in actions:
+                successor= gameState.generateSuccessor(0, action)
+                value = max (value, expectedLevel(successor, currentDepth, 1))
+
+            return value
+
+
+        def expectedLevel(gameState, depth, agent_index):
+            if gameState.isWin() or gameState.isLose():
+                return self.evaluationFunction(gameState)
+
+            actions = gameState.getLegalActions(agent_index)
+            totalValue = 0
+            actions_num = len(actions)
+
+            for action in actions:
+                successor= gameState.generateSuccessor(agent_index, action)
+
+                if agent_index == (gameState.getNumAgents() - 1):
+                    expectedvalue = max_f(successor, depth)
+                else:
+                    expectedvalue = expectedLevel(successor, depth, agent_index + 1)
+
+                totalValue = totalValue + expectedvalue
+
+            if actions_num == 0:
+                return  0
+
+            return float(totalValue) / float(actions_num)
+
+
+        actions = gameState.getLegalActions(0)
+        currentScore = -999
+        returnAction = ''
+
+        for action in actions:
+            nextState = gameState.generateSuccessor(0, action)
+            score = expectedLevel(nextState, 0, 1)
+
+            if score > currentScore:
+                returnAction = action
+                currentScore = score
+
+        return returnAction
 
 def betterEvaluationFunction(currentGameState):
     """
