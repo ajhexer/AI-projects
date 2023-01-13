@@ -81,12 +81,12 @@ class ReflexAgent(Agent):
         ghost_dist = [util.manhattanDistance(newPos, ghost.getPosition()) for ghost in newGhostStates]
         for dist, time in zip(ghost_dist, newScaredTimes):
             if time > 0:
-                score += 1.0 / dist
+                score += dist
             else:
                 if dist <= 1:
                     score -= 100
                 else:
-                    score += 1.0 / dist
+                    score += 1/dist
         score += successorGameState.getScore()
         return score
 
