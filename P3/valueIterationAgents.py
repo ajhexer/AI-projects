@@ -194,5 +194,31 @@ class PrioritizedSweepingValueIterationAgent(AsynchronousValueIterationAgent):
         ValueIterationAgent.__init__(self, mdp, discount, iterations)
 
     def runValueIteration(self):
-        "*** YOUR CODE HERE ***"
+        mdp = self.mdp
+        states = mdp.getStates()
+        predecessors = {}
+        for state in states:
+            predecessors[state] = set()
+        for state in states:
+            for action in mdp.getPossibleActions(state):
+                for nextState, prob in mdp.getTransitionStatesAndProbs(state, action):
+                    if prob > 0:
+                        predecessors[nextState].add(state)
+        queue = util.PriorityQueue()
+        for state in states:
+            if not mdp.isTerminal(state):
+                diff = abs(self.values[state] - self.computeQValueFromValues(state, self.computeActionFromValues(state)))
+                queue.update(state, -diff)
+        for i in range(self.iterations):
+            if queue.isEmpty():
+                break
+            state = queue.pop()
+            if not mdp.isTerminal(state):
+                self.values[state] = self.computeQValueFromValues(state, self.computeActionFromValues(state))
+            for p in predecessors[state]:
+                if not mdp.isTerminal(p):
+                    diff = abs(self.values[p] - self.computeQValueFromValues(p, self.computeActionFromValues(p)))
+                    if diff > self.theta:
+                        queue.update(p, -diff)
+
 
